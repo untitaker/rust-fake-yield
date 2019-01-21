@@ -6,3 +6,5 @@ edition = "2018"
 
 [dependencies]
 itertools = "*"
+proc-macro-hack = "0.5"
+fake-yield-inner = { version = "*", path = "./inner/" }

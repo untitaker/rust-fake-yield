@@ -1,0 +1,15 @@
+[package]
+name = "fake-yield-inner"
+version = "0.1.0"
+authors = ["Markus Unterwaditzer <markus@unterwaditzer.net>"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro-hack = { version = "0.5" }
+quote = "0.6"
+syn = { version = "0.15", features = ["full"] }
+itertools = "*"
+proc-macro2 = "0.4.26"
