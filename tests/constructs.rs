@@ -1,4 +1,29 @@
 use fake_yield::fake_yield;
+use itertools::Itertools;
+
+#[test]
+fn demo_case() {
+    fn to_html_stream<'a>(xs: impl IntoIterator<Item = &'a str>) -> impl Iterator<Item = &'a str> {
+        fake_yield! {{
+            _yield!("<ul>\n");
+            for x in xs {
+                _yield!("<li>");
+                _yield!(x);  // Don't try this at home
+                _yield!("</li>\n");
+            }
+            _yield!("</ul>");
+        }}
+    }
+
+    assert_eq!(
+        to_html_stream(vec!["1", "2", "3"]).join(""),
+        r#"<ul>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+</ul>"#
+    );
+}
 
 #[test]
 fn basecase() {
@@ -155,19 +180,19 @@ fn void_exprs() {
     assert_eq!(foo(false).collect::<Vec<_>>(), vec![42]);
 }
 
-//#[test]
-//fn for_loops() {
-//fn foo() -> impl Iterator<Item = usize> {
-//fake_yield! {
-//for &i in (&[1, 99, 2, 60]) {
-//if (i == 1 || i == 2) {
-//_yield!(i);
-//}
-//}
+#[test]
+fn for_loops() {
+    fn foo() -> impl Iterator<Item = usize> {
+        fake_yield! {{
+            for &i in (&[1, 99, 2, 60]) {
+                if (i == 1 || i == 2) {
+                    _yield!(i);
+                }
+            }
 
-//_yield!(3usize);
-//}
-//}
+            _yield!(3usize);
+        }}
+    }
 
-//assert_eq!(foo().collect::<Vec<_>>(), vec![1, 2, 3]);
-//}
+    assert_eq!(foo().collect::<Vec<_>>(), vec![1, 2, 3]);
+}

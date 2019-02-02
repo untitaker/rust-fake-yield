@@ -107,6 +107,28 @@ fn handle_expr(expr: syn::Expr) -> Res<syn::Expr> {
             handle_block(&mut expr_block.block);
             Ok(expr_block.into())
         }
+        ForLoop(syn::ExprForLoop {
+            pat,
+            expr,
+            mut body,
+            ..
+        }) => {
+            handle_block(&mut body);
+
+            let mut rv = TokenStream::new();
+            quote!(
+                ::fake_yield::CallbackIterator::Uncalled(
+                    move || ::std::iter::Iterator::flatten(
+                        ::std::iter::Iterator::map(
+                            ::std::iter::IntoIterator::into_iter(#expr),
+                            |#pat| #body
+                        )
+                    )
+                )
+            ).to_tokens(&mut rv);
+
+            Ok(syn::parse2(rv).expect("converting for-loop failed"))
+        }
         x => Err(x),
     }
 }
