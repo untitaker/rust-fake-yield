@@ -196,3 +196,23 @@ fn for_loops() {
 
     assert_eq!(foo().collect::<Vec<_>>(), vec![1, 2, 3]);
 }
+
+#[test]
+fn either() {
+    fn either<T>(cond: bool, a: impl Iterator<Item = T>, b: impl Iterator<Item = T>) -> impl Iterator<Item = T> {
+        fake_yield! {{
+            if cond {
+                for x in a {
+                    _yield!(x);
+                }
+            } else {
+                for x in b {
+                    _yield!(x);
+                }
+            }
+        }}
+    }
+
+    assert_eq!(either(false, Some(1).into_iter(), Some(2).into_iter()).collect::<Vec<_>>(), vec![2]);
+    assert_eq!(either(true, Some(1).into_iter(), Some(2).into_iter()).collect::<Vec<_>>(), vec![1]);
+}
